@@ -18,7 +18,13 @@
             "role": "original developer"
         }
     ],
-    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "discard-changes": true,
+        "preferred-install": {
+            "*": "dist"
+        }
+    },
     "require": {
         "php": "^7.0",
         "eclipxe/cfdiutils": "^1.0",
@@ -40,6 +46,5 @@
         "psr-4": {
             "PhpCfdi\\CFDITests\\": "tests/CFDITests"
         }
-    },
-    "prefer-stable": true
+    }
 }
