@@ -1,10 +1,20 @@
 <?php
+/*
+ * This file is part of the eclipxe/cfdi library.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @copyright Copyright (c) Carlos C Soto <eclipxe13@gmail.com>
+ * @license http://opensource.org/licenses/MIT MIT
+ * @link https://github.com/eclipxe13/cfdi GitHub
+ * @link https://github.com/orlandocharles/cfdi Original project
+ */
+namespace PhpCfdi\CFDITests\Common;
 
-namespace Charles\Tests\CFDI\Common;
-
-use Charles\CFDI\Common\Node;
 use DOMDocument;
 use DOMElement;
+use PhpCfdi\CFDI\Common\Node;
 use PHPUnit\Framework\TestCase;
 
 class NodeTest extends TestCase

@@ -1,20 +1,20 @@
 # Comprobante Fiscal Digital por Internet (CFDI v3.3)
 
-[![Travis](https://img.shields.io/travis/orlandocharles/cfdi.svg?style=flat-square)](https://travis-ci.org/orlandocharles/cfdi) [![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg?style=flat-square)](https://gitter.im/orlandocharles/cfdi) [![License](https://img.shields.io/github/license/orlandocharles/cfdi.svg?style=flat-square)](https://packagist.org/packages/orlandocharles/cfdi) [![Donate](https://img.shields.io/badge/Donate-PayPal-3b7bbf.svg?style=flat-square)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=H2KAFWPGPMKHJ)
-
-- [Instalación](#instalación)
-- [Uso](#uso)
-- [Licencia](#licencia)
-- [Donación](#donación)
+[![Source Code][badge-source]][source]
+[![Latest Version][badge-release]][release]
+[![Software License][badge-license]][license]
+[![Build Status][badge-build]][build]
+[![Scrutinizer][badge-quality]][quality]
+[![Coverage Status][badge-coverage]][coverage]
+[![Total Downloads][badge-downloads]][downloads]
+[![SensioLabsInsight][badge-sensiolabs]][sensiolabs]
 
 ## Instalación
-
-> Nota: el proyecto se encuentra en desarrollo.
 
 Para instalar el paquete mediante [Composer](https://getcomposer.org/).
 
 ```shell
-composer require orlandocharles/cfdi
+composer require eclipxe/cfdi
 ```
 
 ## Uso
@@ -49,17 +49,14 @@ composer require orlandocharles/cfdi
 ### CFDI
 
 ```php
-use Charles\CFDI\CFDI;
-
-$cer = file_get_contents('.../csd/AAA010101AAA.cer.pem');
-$key = file_get_contents('.../csd/AAA010101AAA.key.pem');
+<?php
+use PhpCfdi\CFDI\CFDI;
 
 $cfdi = new CFDI([
     'Serie' => 'A',
     'Folio' => 'A0101',
     'Fecha' => '2017-06-17T03:00:00',
     'FormaPago' => '01',
-    'NoCertificado' => '00000000000000000000',
     'CondicionesDePago' => '',
     'Subtotal' => '',
     'Descuento' => '0.00',
@@ -69,7 +66,10 @@ $cfdi = new CFDI([
     'TipoDeComprobante' => 'I',
     'MetodoPago' => 'PUE',
     'LugarExpedicion' => '64000',
-], $cer, $key);
+]);
+
+$cfdi->addCertificado(new \CfdiUtils\Certificado('.../csd/AAA010101AAA.cer'));
+$cfdi->setPrivateKey(file_get_contents('.../csd/AAA010101AAA.key.pem'));
 ```
 
 ### CFDI Relacionado
@@ -77,16 +77,20 @@ $cfdi = new CFDI([
 En este nodo se debe expresar la información de los comprobantes fiscales relacionados con el que se ésta generando, se deben expresar tantos numeros de nodos de CfdiRelacionado, como comprobantes se requieran relacionar.
 
 ```php
-use Charles\CFDI\CFDI;
-use Charles\CFDI\Node\Relacionado;
+<?php
+use PhpCfdi\CFDI\CFDI;
+use PhpCfdi\CFDI\Node\Relacionado;
 
-$cfdi = new CFDI([...]);
+$cfdi = new CFDI([]);
 
-$cfdi->add(new Relacionado([
-    'UUID' => 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX',
-], [
-    'TipoRelacion' => '01',
-]));
+$cfdi->add(new Relacionado(
+    [ // atributos del nodo cfdi:Relacionado
+        'UUID' => 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX'
+    ],
+    [ // atributos del nodo padre cfdi:Relacionados
+        'TipoRelacion' => '01'
+    ]
+));
 ```
 
 ```xml
@@ -100,10 +104,11 @@ $cfdi->add(new Relacionado([
 En este nodo se debe expresar la información del contribuyente que emite el comprobante fiscal.
 
 ```php
-use Charles\CFDI\CFDI;
-use Charles\CFDI\Node\Emisor;
+<?php
+use PhpCfdi\CFDI\CFDI;
+use PhpCfdi\CFDI\Node\Emisor;
 
-$cfdi = new CFDI([...]);
+$cfdi = new CFDI([]);
 
 $cfdi->add(new Emisor([
     'Rfc' => 'XAXX010101000',
@@ -121,10 +126,11 @@ $cfdi->add(new Emisor([
 En este nodo se debe expresar la información del contribuyente receptor del comprobante.
 
 ```php
-use Charles\CFDI\CFDI;
-use Charles\CFDI\Node\Receptor;
+<?php
+use PhpCfdi\CFDI\CFDI;
+use PhpCfdi\CFDI\Node\Receptor;
 
-$cfdi = new CFDI([...]);
+$cfdi = new CFDI([]);
 
 $cfdi->add(new Receptor([
     'Rfc' => 'XEXX010101000',
@@ -144,10 +150,11 @@ $cfdi->add(new Receptor([
 En este nodo se debe expresar la información detallada de un bien o servicio descrito en el comprobante.
 
 ```php
-use Charles\CFDI\CFDI;
-use Charles\CFDI\Node\Concepto;
+<?php
+use PhpCfdi\CFDI\CFDI;
+use PhpCfdi\CFDI\Node\Concepto;
 
-$cfdi = new CFDI([...]);
+$cfdi = new CFDI([]);
 
 $cfdi->add(new Concepto([
     'ClaveProdServ' => '10317331',
@@ -190,8 +197,8 @@ $cfdi->add(new Concepto([
 En este nodo se debe expresar la información detallada de una retención de un impuesto específico.
 
 ```php
-use Charles\CFDI\CFDI;
-use Charles\CFDI\Node\Impuesto\Retencion;
+use PhpCfdi\CFDI\CFDI;
+use PhpCfdi\CFDI\Node\Impuesto\Retencion;
 
 $cfdi->add(new Retencion([
     'Impuesto' => '002',
@@ -202,11 +209,12 @@ $cfdi->add(new Retencion([
 ##### Retención en concepto
 
 ```php
-use Charles\CFDI\CFDI;
-use Charles\CFDI\Node\Concepto;
-use Charles\CFDI\Node\Impuesto\Retencion;
+<?php
+use PhpCfdi\CFDI\CFDI;
+use PhpCfdi\CFDI\Node\Concepto;
+use PhpCfdi\CFDI\Node\Impuesto\Retencion;
 
-$cfdi = new CFDI([...]);
+$cfdi = new CFDI([]);
 
 $concepto = new Concepto([
     'ClaveProdServ' => '10317331',
@@ -234,8 +242,8 @@ $cfdi->add($concepto);
 En este nodo se debe expresar la información detallada de un traslado de impuesto específico.
 
 ```php
-use Charles\CFDI\CFDI;
-use Charles\CFDI\Node\Impuesto\Traslado;
+use PhpCfdi\CFDI\CFDI;
+use PhpCfdi\CFDI\Node\Impuesto\Traslado;
 
 $cfdi->add(new Traslado([
     'Impuesto' => '001',
@@ -248,11 +256,12 @@ $cfdi->add(new Traslado([
 ##### Traslado en concepto
 
 ```php
-use Charles\CFDI\CFDI;
-use Charles\CFDI\Node\Concepto;
-use Charles\CFDI\Node\Impuesto\Traslado;
+<?php
+use PhpCfdi\CFDI\CFDI;
+use PhpCfdi\CFDI\Node\Concepto;
+use PhpCfdi\CFDI\Node\Impuesto\Traslado;
 
-$cfdi = new CFDI([...]);
+$cfdi = new CFDI([]);
 
 $concepto = new Concepto([
     'ClaveProdServ' => '10317331',
@@ -278,11 +287,12 @@ $cfdi->add($concepto);
 En este nodo se debe expresar la información aduanera correspondiente a cada concepto cuando se trate de ventas de primera mano de mercancías importadas
 
 ```php
-use Charles\CFDI\CFDI;
-use Charles\CFDI\Node\Concepto;
-use Charles\CFDI\Node\InformacionAduanera;
+<?php
+use PhpCfdi\CFDI\CFDI;
+use PhpCfdi\CFDI\Node\Concepto;
+use PhpCfdi\CFDI\Node\InformacionAduanera;
 
-$cfdi = new CFDI([...]);
+$cfdi = new CFDI([]);
 
 $concepto = new Concepto([
     'ClaveProdServ' => '10317331',
@@ -316,12 +326,13 @@ $cfdi->add($concepto);
 En este nodo se puede expresar el número de cuenta predial con el que fue registrado el inmueble en el sistema catastral de la entidad federativa de que trate, o bien para incorporar los datos de identificación del certificado de participación inmobiliaria no amortizable.
 
 ```php
-use Charles\CFDI\CFDI;
-use Charles\CFDI\Node\Concepto;
-use Charles\CFDI\Node\CuentaPredial;
+<?php
+use PhpCfdi\CFDI\CFDI;
+use PhpCfdi\CFDI\Node\Concepto;
+use PhpCfdi\CFDI\Node\CuentaPredial;
 
-$cfdi = new CFDI([...]);
-$concepto = new Concepto([...]);
+$cfdi = new CFDI([]);
+$concepto = new Concepto();
 
 $concepto->add(new CuentaPredial([
     'Numero' => '00000',
@@ -335,11 +346,12 @@ $cfdi->add($concepto);
 En este nodo se pueden expresar las partes o componentes que integran la totalidad del concepto expresado en el comprobante fiscal digital por Internet.
 
 ```php
-use Charles\CFDI\CFDI;
-use Charles\CFDI\Node\Concepto;
-use Charles\CFDI\Node\Parte;
+<?php
+use PhpCfdi\CFDI\CFDI;
+use PhpCfdi\CFDI\Node\Concepto;
+use PhpCfdi\CFDI\Node\Parte;
 
-$cfdi = new CFDI([...]);
+$cfdi = new CFDI([]);
 
 $concepto = new Concepto([
     'ClaveProdServ' => '27113201',
@@ -410,10 +422,11 @@ $cfdi->add($concepto);
 ### Pago
 
 ```php
-use Charles\CFDI\CFDI;
-use Charles\CFDI\Node\Complemento\Pagos\Pago;
+<?php
+use PhpCfdi\CFDI\CFDI;
+use PhpCfdi\CFDI\Node\Complemento\Pagos\Pago;
 
-$cfdi = new CFDI([...]);
+$cfdi = new CFDI([]);
 
 $cfdi->add(new Pago([
     'FechaPago' => '2017-01-01T12:00:00',
@@ -437,12 +450,13 @@ $cfdi->add(new Pago([
 #####Documento relacionado
 
 ```php
-use Charles\CFDI\CFDI;
-use Charles\CFDI\Node\Complemento\Pagos\Pago;
-use Charles\CFDI\Node\Complemento\Pagos\DoctoRelacionado;
+<?php
+use PhpCfdi\CFDI\CFDI;
+use PhpCfdi\CFDI\Node\Complemento\Pagos\Pago;
+use PhpCfdi\CFDI\Node\Complemento\Pagos\DoctoRelacionado;
 
-$cfdi = new CFDI([...]);
-$pago = new Pago([...]);
+$cfdi = new CFDI([]);
+$pago = new Pago();
 
 $pago->add(new DoctoRelacionado([
     'IdDocumento' => '11111111-6EF0-4526-8962-2A5E8C040A6C',
@@ -463,12 +477,13 @@ $cfdi->add($pago);
 #####Traslado en pago
 
 ```php
-use Charles\CFDI\CFDI;
-use Charles\CFDI\Node\Complemento\Pagos\Pago;
-use Charles\CFDI\Node\Complemento\Pagos\Impuesto\Traslado;
+<?php
+use PhpCfdi\CFDI\CFDI;
+use PhpCfdi\CFDI\Node\Complemento\Pagos\Pago;
+use PhpCfdi\CFDI\Node\Complemento\Pagos\Impuesto\Traslado;
 
-$cfdi = new CFDI([...]);
-$pago = new Pago([...]);
+$cfdi = new CFDI([]);
+$pago = new Pago();
 
 $pago->add(new Traslado([
     'Impuesto' => '001',
@@ -483,12 +498,13 @@ $cfdi->add($pago);
 #####Retención en pago
 
 ```php
-use Charles\CFDI\CFDI;
-use Charles\CFDI\Node\Complemento\Pagos\Pago;
-use Charles\CFDI\Node\Complemento\Pagos\Impuesto\Retencion;
+<?php
+use PhpCfdi\CFDI\CFDI;
+use PhpCfdi\CFDI\Node\Complemento\Pagos\Pago;
+use PhpCfdi\CFDI\Node\Complemento\Pagos\Impuesto\Retencion;
 
-$cfdi = new CFDI([...]);
-$pago = new Pago([...]);
+$cfdi = new CFDI([]);
+$pago = new Pago();
 
 $pago->add(new Retencion([
     'Impuesto' => '001',
@@ -510,8 +526,9 @@ Si desea descargar recursivamente los recursos del SAT para almacenarlos localme
 y reutilizar los archivos XSLT del SAT.
 
 ```php
-use Charles\CFDI\CFDI;
-use Charles\CFDI\XmlResolver;
+<?php
+use PhpCfdi\CFDI\CFDI;
+use PhpCfdi\CFDI\XmlResolver;
 
 // no usará almacenamiento local
 $resolver = new XmlResolver('');
@@ -527,18 +544,44 @@ $resolver = new XmlResolver('/cfdi/cache/');
 $cfdi->setResolver($resolver);
 
 // también lo puede establecer desde el momento de su construcción
-new CFDI($attributes, $cer, $key, $resolver);
+$cfdi = new CFDI([], $resolver);
 ```
 
 Si se encuentra detrás de un proxy o quiere usar sus propios métodos de descarga puede implementar
 la interfaz `XmlResourceRetriever\Downloader\DownloaderInterface` y establecérsela a su objeto `XmlResolver`
 
+## Contribuciones
+
+¡Sus contribuciones son bienvenidas! Por favor lea el archivo [CONTRIBUTING][] para más detalles.
+No olvides también revisar los archivos [CHANGELOG][] y [TODO][].
+
 ## Licencia
 
-Este paquete no pertenece a ninguna comañia ni entidad gubernamental y esta bajo la Licencia MIT, si quieres saber más al respecto puedes ver el archivo de [Licencia](LICENSE) que se encuentra en este mismo repositorio.
+La librería eclipxe/cfdi tiene copyright © Carlos C Soto y está bajo la licencia MIT. 
+Ver el archivo de [Licencia](LICENSE) para más información.
 
-## Donación
+Los derechos de autor de algunas porciones de este proyecto pertenecen a Orlando Charles <me@orlandocharles.com>, 2017
+como parte del proyecto orlandocharles/cfdi (https://github.com/orlandocharles/cfdi) con licencia MIT.
 
-Este proyecto ayuda a que otros desarrolladores ahorren horas de trabajo.
 
-[![paypal](https://www.paypalobjects.com/es_XC/MX/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=H2KAFWPGPMKHJ)
+[contributing]: https://github.com/eclipxe13/CfdiUtils/blob/master/CONTRIBUTING.md
+[changelog]: https://github.com/eclipxe13/CfdiUtils/blob/master/docs/CHANGELOG.md
+[todo]: https://github.com/eclipxe13/CfdiUtils/blob/master/docs/TODO.md
+
+[source]: https://github.com/eclipxe13/cfdi
+[release]: https://github.com/eclipxe13/cfdi/releases
+[license]: https://github.com/eclipxe13/cfdi/blob/master/LICENSE
+[build]: https://travis-ci.org/eclipxe13/cfdi?branch=master
+[quality]: https://scrutinizer-ci.com/g/eclipxe13/cfdi/
+[sensiolabs]: https://insight.sensiolabs.com/projects/90e39c57-123f-46e5-8a4d-2e83d2a98824
+[coverage]: https://scrutinizer-ci.com/g/eclipxe13/cfdi/code-structure/master/code-coverage
+[downloads]: https://packagist.org/packages/eclipxe/cfdi
+
+[badge-source]: http://img.shields.io/badge/source-eclipxe13/cfdi-blue.svg?style=flat-square
+[badge-release]: https://img.shields.io/github/release/eclipxe13/cfdi.svg?style=flat-square
+[badge-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square
+[badge-build]: https://img.shields.io/travis/eclipxe13/cfdi/master.svg?style=flat-square
+[badge-quality]: https://img.shields.io/scrutinizer/g/eclipxe13/cfdi/master.svg?style=flat-square
+[badge-sensiolabs]: https://insight.sensiolabs.com/projects/90e39c57-123f-46e5-8a4d-2e83d2a98824/mini.png
+[badge-coverage]: https://img.shields.io/scrutinizer/coverage/g/eclipxe13/cfdi/master.svg?style=flat-square
+[badge-downloads]: https://img.shields.io/packagist/dt/eclipxe/cfdi.svg?style=flat-square
