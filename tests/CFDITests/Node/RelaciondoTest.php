@@ -27,17 +27,11 @@ class RelaciondoTest extends TestCase
      */
     protected $relacionado;
 
-    /**
-     *
-     */
     public function setUp()
     {
         $this->relacionado = new Relacionado();
     }
 
-    /**
-     *
-     */
     public function testNodeName()
     {
         $this->assertEquals(
@@ -46,9 +40,6 @@ class RelaciondoTest extends TestCase
         );
     }
 
-    /**
-     *
-     */
     public function testParentNodeName()
     {
         $this->assertEquals(

@@ -27,17 +27,11 @@ class ParteTest extends TestCase
      */
     protected $parte;
 
-    /**
-     *
-     */
     public function setUp()
     {
         $this->parte = new Parte();
     }
 
-    /**
-     *
-     */
     public function testNodeName()
     {
         $this->assertEquals(

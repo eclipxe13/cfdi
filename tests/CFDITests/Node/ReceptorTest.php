@@ -27,17 +27,11 @@ class ReceptorTest extends TestCase
      */
     protected $receptor;
 
-    /**
-     *
-     */
     public function setUp()
     {
         $this->receptor = new Receptor();
     }
 
-    /**
-     *
-     */
     public function testNodeName()
     {
         $this->assertEquals(

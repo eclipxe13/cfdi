@@ -27,17 +27,11 @@ class EmisorTest extends TestCase
      */
     protected $emisor;
 
-    /**
-     *
-     */
     public function setUp()
     {
         $this->emisor = new Emisor();
     }
 
-    /**
-     *
-     */
     public function testNodeName()
     {
         $this->assertEquals(

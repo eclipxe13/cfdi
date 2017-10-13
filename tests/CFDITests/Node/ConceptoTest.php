@@ -27,17 +27,11 @@ class ConceptoTest extends TestCase
      */
     protected $concepto;
 
-    /**
-     *
-     */
     public function setUp()
     {
         $this->concepto = new Concepto();
     }
 
-    /**
-     *
-     */
     public function testNodeName()
     {
         $this->assertEquals(
@@ -46,9 +40,6 @@ class ConceptoTest extends TestCase
         );
     }
 
-    /**
-     *
-     */
     public function testParentNodeName()
     {
         $this->assertEquals(

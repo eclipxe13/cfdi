@@ -27,17 +27,11 @@ class CuentaPredialTest extends TestCase
      */
     protected $cuentaPredial;
 
-    /**
-     *
-     */
     public function setUp()
     {
         $this->cuentaPredial = new CuentaPredial();
     }
 
-    /**
-     *
-     */
     public function testNodeName()
     {
         $this->assertEquals(

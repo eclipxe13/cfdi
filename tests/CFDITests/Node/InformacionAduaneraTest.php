@@ -27,17 +27,11 @@ class InformacionAduaneraTest extends TestCase
      */
     protected $informacionAduanera;
 
-    /**
-     *
-     */
     public function setUp()
     {
         $this->informacionAduanera = new InformacionAduanera();
     }
 
-    /**
-     *
-     */
     public function testNodeName()
     {
         $this->assertEquals(
