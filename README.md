@@ -515,6 +515,29 @@ $cfdi->add($pago);
 ```
 
 
+## Validator
+
+Esta librería no hace validaciones ni transformaciones de datos. 
+Para revisar que el CFDI fue construido correctamente depende de la librería `eclipxe/buzoncfdi-cfdireader`
+ con la que revisa que se cumplan los esquemas de Xml (xsd files) y otras validaciones que no se pueden
+ realizar desde los esquemas como sumas o campos condicionales.
+
+Este objeto depende directamente de `XmlResolver` para validar localmente en lugar de usando archivos de internet.
+
+```php
+<?php
+use PhpCfdi\CFDI\CFDI;
+use PhpCfdi\CFDI\Validator;
+$cfdi = new CFDI([]);
+$validator = Validator::newFromCFDI($cfdi);
+
+$hasErrors = $validator->validate();
+
+$validator->getIssues();   // contiene la lista de errores y warnings
+$validator->getErrors();   // contiene solo la lista de errores
+$validator->getWarnings(); // contiene solo la lista de advertencias
+```
+
 ## XmlResolver
 
 De manera predeterminada, para construir la cadena de origen se usa el mecanismo recomendado por el SAT
