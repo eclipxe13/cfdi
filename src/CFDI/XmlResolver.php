@@ -145,10 +145,11 @@ class XmlResolver
     }
 
     /**
+     * Create a new retriever depending on the type parameter, only allow TYPE_XSLT and TYPE_XSD
      * @param string $type
      * @return RetrieverInterface|null
      */
-    private function newRetriever(string $type)
+    public function newRetriever(string $type)
     {
         if (static::TYPE_XSLT === $type) {
             return new XsltRetriever($this->getLocalPath(), $this->getDownloader());
