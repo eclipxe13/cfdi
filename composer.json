@@ -28,7 +28,8 @@
     "require": {
         "php": "^7.0",
         "eclipxe/cfdiutils": "^1.0",
-        "eclipxe/xmlresourceretriever": "^1.1"
+        "eclipxe/xmlresourceretriever": "^1.1",
+        "eclipxe/buzoncfdi-cfdireader": "^2.5"
     },
     "require-dev": {
         "phpunit/phpunit": "^6.0",

@@ -166,6 +166,10 @@ class FullInvoiceCaseTest extends TestCase
         // add private key before save the xml, this will allow to create the sello
         $cfdi->setPrivateKey(file_get_contents($keyfile));
 
+        // validate cfdi
+        $validator = Validator::newFromCFDI($cfdi);
+        $this->assertTrue($validator->validate());
+
         $expectedContentsFile = Util::asset('cases/sale-with-discount.xml');
         $this->assertXmlStringEqualsXmlFile($expectedContentsFile, $cfdi->getXML());
     }
